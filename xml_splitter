@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+/* use composer generated autoloader */
+require_once('vendor/autoload.php');
+
+use Symfony\Component\Console\Application;
+use XmlSplitter\Command\SplitCommand;
+
+$app = new Application();
+$app->add(new SplitCommand());
+$app->run();

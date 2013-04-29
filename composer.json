@@ -1,0 +1,18 @@
+{
+    "name": "xmlSplitter/xmlSplitter",
+    "license": "MIT",
+    "require": {
+        "symfony/console": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "XmlSplitter": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Frank Weigmann",
+            "email": "frank.weigmann@bitundpixel.de"
+        }
+    ]
+}
