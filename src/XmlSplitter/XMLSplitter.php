@@ -4,7 +4,7 @@ namespace XmlSplitter;
 
 use XMLReader;
 
-class XMLSplitter {
+class XmlSplitter {
 
     /**
      * @var XMLReader;
@@ -31,18 +31,31 @@ class XMLSplitter {
      */
     protected $nameByAttribute;
 
-    protected $fileCount = 0;
+    /**
+     * @var int
+     */
+    protected $fileCount = 1;
 
+    /**
+     * @param XMLReader $reader
+     * @param string    $file
+     */
     public function __construct(XMLReader $reader, $file)
     {
         $this->reader = $reader;
-        $this->file = $file;
+        $this->setFile($file);
+
+        $filename =  explode('.', $this->getFile());
+        $this->outputFolder = sys_get_temp_dir() . '/xml_splitter_output/' . $filename[0];
     }
 
+    /**
+     * @param string $tag
+     * @throws \Exception
+     */
     public function split($tag)
     {
         if (!file_exists($this->file)) {
-            var_dump($this->file);
             throw new \Exception('The given XML File does not exist');
         }
 
@@ -54,6 +67,9 @@ class XMLSplitter {
 
     }
 
+    /**
+     * write the output
+     */
     protected function writeOutput()
     {
         $xml = $this->createSimpleXmlElement();
@@ -62,6 +78,11 @@ class XMLSplitter {
         file_put_contents($filename, $xml->saveXML());
     }
 
+    /**
+     * create a SimpleXMLElement with the value of the current position of the XMLReader
+     *
+     * @return \SimpleXMLElement
+     */
     protected function createSimpleXmlElement()
     {
         $dom = new \DomDocument();
@@ -71,9 +92,15 @@ class XMLSplitter {
         return simplexml_import_dom($n);
     }
 
+    /**
+     * return the output file name
+     *
+     * @param \SimpleXMLElement $xml
+     * @return string
+     */
     protected function getOutputFileName(\SimpleXMLElement $xml)
     {
-        $filename = $this->fileCount++;
+        $filename = (string) $this->getFileCount();
         if (!is_null($this->getNameByTag()) && is_null($this->getNameByAttribute())) {
             $tag = $this->getNameByTag();
             $filename = (string) $xml->$tag;
@@ -88,18 +115,20 @@ class XMLSplitter {
             $filename = (string) $xml->$tag->attributes()->$attribute;
         }
 
+        $this->increaseFileCount();
+
         return $filename;
     }
 
     /**
      * check if the OutputFolder exists and if not it will create it
      *
-     * @return XMLSplitter
+     * @return XmlSplitter
      */
     protected function checkAndCreateOutputFolder()
     {
         if (!file_exists($this->getOutputFolder())) {
-            mkdir($this->getOutputFolder());
+            mkdir($this->getOutputFolder(), 0755, true);
         }
 
 
@@ -128,7 +157,7 @@ class XMLSplitter {
     /**
      * @param string $file
      *
-     * @return XMLSplitter
+     * @return XmlSplitter
      */
     public function setFile($file)
     {
@@ -148,7 +177,7 @@ class XMLSplitter {
     /**
      * @param string $outputFolder
      *
-     * @return XMLSplitter
+     * @return XmlSplitter
      */
     public function setOutputFolder($outputFolder)
     {
@@ -162,17 +191,13 @@ class XMLSplitter {
      */
     public function getOutputFolder()
     {
-        if (is_null($this->outputFolder)) {
-            $this->outputFolder = __DIR__ . '/../../output';
-        }
-
         return $this->outputFolder;
     }
 
     /**
      * @param \XMLReader $reader
      *
-     * @return XMLSplitter
+     * @return XmlSplitter
      */
     public function setReader($reader)
     {
@@ -191,6 +216,8 @@ class XMLSplitter {
 
     /**
      * @param string $nameByAttribute
+     *
+     * @return XmlSplitter
      */
     public function setNameByAttribute($nameByAttribute)
     {
@@ -209,6 +236,8 @@ class XMLSplitter {
 
     /**
      * @param string $nameByTag
+     *
+     * @return XmlSplitter
      */
     public function setNameByTag($nameByTag)
     {
@@ -223,5 +252,25 @@ class XMLSplitter {
     public function getNameByTag()
     {
         return $this->nameByTag;
+    }
+
+    /**
+     * @param int $fileCount
+     *
+     * @return XmlSplitter
+     */
+    public function increaseFileCount($add = 1)
+    {
+        $this->fileCount = $this->fileCount + $add;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFileCount()
+    {
+        return $this->fileCount;
     }
 }

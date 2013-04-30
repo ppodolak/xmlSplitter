@@ -4,9 +4,8 @@
 /* use composer generated autoloader */
 require_once('vendor/autoload.php');
 
-use Symfony\Component\Console\Application;
+use XmlSplitter\XmlSplitterApplication;
 use XmlSplitter\Command\SplitCommand;
 
-$app = new Application();
-$app->add(new SplitCommand());
+$app = new XmlSplitterApplication();
 $app->run();

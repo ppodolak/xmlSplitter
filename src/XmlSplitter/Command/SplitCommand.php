@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use XmlSplitter\XMLSplitter;
+use XmlSplitter\XmlSplitter;
 
 class SplitCommand extends Command
 {
@@ -38,16 +38,24 @@ class SplitCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'which attribute value should be used to name the splitted file'
             )
+            ->addOption(
+                'output-folder',
+                'of',
+                InputOption::VALUE_OPTIONAL,
+                'absolute path to a folder you want to store the splitted xml files'
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-//        var_dump($input->getOption('name-by-tag-value'), $input->hasOption('name-by-attribute-value'));exit;
         $reader = new \XMLReader();
-        $xmlSplitter = new XMLSplitter($reader, $input->getArgument('file'));
+        $xmlSplitter = new XmlSplitter($reader, $input->getArgument('file'));
         $xmlSplitter->setNameByTag($input->getOption('name-by-tag-value'));
         $xmlSplitter->setNameByAttribute($input->getOption('name-by-attribute-value'));
+        if (!is_null($input->getOption('output-folder'))) {
+            $xmlSplitter->setOutputFolder($input->getOption('output-folder'));
+        }
         $xmlSplitter->split($input->getArgument('tag'));
 
     }
