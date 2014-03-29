@@ -45,8 +45,8 @@ class XmlSplitter {
         $this->reader = $reader;
         $this->setFile($file);
 
-        $filename =  explode('.', $this->getFile());
-        $this->outputFolder = sys_get_temp_dir() . '/xml_splitter_output/' . $filename[0];
+        $filename =  basename($this->getFile(), '.xml');
+        $this->outputFolder = sys_get_temp_dir() . '/xml_splitter_output/' . $filename;
     }
 
     /**
