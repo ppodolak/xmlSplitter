@@ -32,6 +32,11 @@ class XmlSplitter {
     protected $nameByAttribute;
 
     /**
+     * @var string
+     */
+    protected $nameCustom;
+
+    /**
      * @var int
      */
     protected $fileCount = 1;
@@ -101,7 +106,11 @@ class XmlSplitter {
     protected function getOutputFileName(\SimpleXMLElement $xml)
     {
         $filename = (string) $this->getFileCount();
-        if (!is_null($this->getNameByTag()) && is_null($this->getNameByAttribute())) {
+
+        if(!is_null($this->nameCustom)){
+            $filename = $this->nameCustom;
+        }
+        else if (!is_null($this->getNameByTag()) && is_null($this->getNameByAttribute())) {
             $tag = $this->getNameByTag();
             $filename = (string) $xml->$tag;
         }
@@ -116,7 +125,6 @@ class XmlSplitter {
         }
 
         $this->increaseFileCount();
-
         return $filename;
     }
 
@@ -232,6 +240,25 @@ class XmlSplitter {
     public function getNameByAttribute()
     {
         return $this->nameByAttribute;
+    }
+
+    /**
+     * @param  string $name
+     * @return $this
+     */
+    public function setCustomName($name)
+    {
+        $this->nameCustom = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomName()
+    {
+        return $this->nameCustom;
     }
 
     /**
